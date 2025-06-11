@@ -1,6 +1,6 @@
 #!/usr/bin/env -S bash -euo pipefail
 # -------------------------------------------------------------------------------------------------------------------- #
-#
+# BASH: INSTALLING AND UPDATING SCRIPTS
 # -------------------------------------------------------------------------------------------------------------------- #
 # @package    Bash
 # @author     Kai Kimera <mail@kai.kim>
@@ -28,7 +28,6 @@ ACTION="${4:-install}"; readonly ACTION
 function download() {
   local refs; [[ "${TAG}" == 'main' ]] && refs='heads' || refs='tags'
   local url; url="https://github.com/pkgstore/${NAME}/archive/refs/${refs}/${TAG}.tar.gz"
-
   curl -fLo "${NAME}-main.tar.gz" "${url}"
 }
 
@@ -37,12 +36,12 @@ function unpack() {
 }
 
 function install_app() {
-  [[ "${ACTION}" == 'upgrade' ]] && { for i in app_*.sh; do install -m '0644' -Dt "${DIR}" "${i}"; done; return 0; }
+  [[ "${ACTION}" == 'update' ]] && { for i in app_*.sh; do install -m '0644' -Dt "${DIR}" "${i}"; done; return 0; }
   for i in app_*; do install -m '0644' -Dt "${DIR}" "${i}"; done;
 }
 
 function install_cron() {
-  [[ "${ACTION}" == 'upgrade' ]] && return 0
+  [[ "${ACTION}" == 'update' ]] && return 0
   for i in cron_*; do install -m '0644' -Dt '/etc/cron.d' "${i}"; done;
 }
 
