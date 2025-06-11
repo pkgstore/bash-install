@@ -19,7 +19,6 @@
 DIR="${1:?}"; readonly DIR
 NAME="${2:?}"; readonly NAME
 TAG="${3:?}"; readonly TAG
-ACTION="${4:-install}"; readonly ACTION
 
 # -------------------------------------------------------------------------------------------------------------------- #
 # -----------------------------------------------------< SCRIPT >----------------------------------------------------- #
@@ -37,13 +36,7 @@ function unpack() {
 }
 
 function install_app() {
-  [[ "${ACTION}" == 'upgrade' ]] && { for i in app_*.sh; do install -m '0644' -Dt "${DIR}" "${i}"; done; return 0; }
-  for i in app_*; do install -m '0644' -Dt "${DIR}" "${i}"; done;
-}
-
-function install_cron() {
-  [[ "${ACTION}" == 'upgrade' ]] && return 0
-  for i in cron_*; do install -m '0644' -Dt '/etc/cron.d' "${i}"; done;
+  for i in app_*.sh; do install -m '0644' -Dt "${DIR}" "${i}"; done;
 }
 
 function perms() {
@@ -51,5 +44,5 @@ function perms() {
 }
 
 function main() {
-  download && unpack && install_app && install_cron && perms
+  download && unpack && install_app && perms
 }; main "$@"
