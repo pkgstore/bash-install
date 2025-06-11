@@ -28,11 +28,11 @@ ACTION="${4:-install}"; readonly ACTION
 function download() {
   local refs; [[ "${TAG}" == 'main' ]] && refs='heads' || refs='tags'
   local url; url="https://github.com/pkgstore/${NAME}/archive/refs/${refs}/${TAG}.tar.gz"
-  curl -fLo "${NAME}-main.tar.gz" "${url}"
+  curl -fLo "${NAME}-${TAG}.tar.gz" "${url}"
 }
 
 function unpack() {
-  tar -xzf "${NAME}-main.tar.gz" && { cd "${NAME}-main" || exit; }
+  tar -xzf "${NAME}-${TAG}.tar.gz" && { cd "${NAME}-${TAG}" || exit 1; }
 }
 
 function install_app() {
