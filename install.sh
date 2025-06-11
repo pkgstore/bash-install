@@ -29,7 +29,7 @@ ORG='pkgstore'
 # -------------------------------------------------------------------------------------------------------------------- #
 
 function download() {
-  local dir; dir="${NAME}.$( date +%s ).tmp"
+  local dir; dir="${NAME}.$( date '+%s' ).tmp"
   local ref; ref='tags'; [[ "${TAG}" == 'main' ]] && ref='heads'
   local url; url="https://github.com/${ORG}/${NAME}/archive/refs/${ref}/${TAG}.tar.gz"
   mkdir -p "${dir}" && { cd "${dir}" || exit 1; } && curl -fLo "${NAME}-${TAG}.tar.gz" "${url}"
