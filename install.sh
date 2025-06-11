@@ -33,13 +33,17 @@ function unpack() {
 }
 
 function install_app() {
-  for i in app_*; do install -m '0755' -Dt "${DIR}" "${i}"; done;
+  for i in app_*; do install -m '0644' -Dt "${DIR}" "${i}"; done;
 }
 
 function install_cron() {
   for i in cron_*; do install -m '0644' -Dt '/etc/cron.d' "${i}"; done;
 }
 
+function perms() {
+  chmod +x "${DIR}"/*.sh
+}
+
 function main() {
-  download && unpack && install_app && install_cron
+  download && unpack && install_app && install_cron && perms
 }; main "$@"
