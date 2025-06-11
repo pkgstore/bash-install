@@ -18,14 +18,17 @@
 # Parameters.
 DIR="${1:?}"; readonly DIR
 NAME="${2:?}"; readonly NAME
-URL="https://github.com/pkgstore/${NAME}/archive/refs/heads/main.tar.gz"; readonly URL
+TAG="${3:?}"; readonly TAG
 
 # -------------------------------------------------------------------------------------------------------------------- #
 # -----------------------------------------------------< SCRIPT >----------------------------------------------------- #
 # -------------------------------------------------------------------------------------------------------------------- #
 
 function download() {
-  curl -fLo "${NAME}-main.tar.gz" "${URL}"
+  local refs; [[ "${TAG}" == 'main' ]] && refs='heads' || refs='tags'
+  local url; url="https://github.com/pkgstore/${NAME}/archive/refs/${refs}/${TAG}.tar.gz"
+
+  curl -fLo "${NAME}-main.tar.gz" "${url}"
 }
 
 function unpack() {
