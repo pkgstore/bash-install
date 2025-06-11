@@ -18,7 +18,7 @@
 # Parameters.
 DIR="${1:?}"; readonly DIR
 NAME="${2:?}"; readonly NAME
-TAG="${3:?}"; readonly TAG
+TAG="${3:-main}"; readonly TAG
 ACTION="${4:-install}"; readonly ACTION
 
 # -------------------------------------------------------------------------------------------------------------------- #
