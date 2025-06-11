@@ -21,13 +21,16 @@ NAME="${2:?}"; readonly NAME
 TAG="${3:?}"; readonly TAG
 ACTION="${4:-install}"; readonly ACTION
 
+# Variables.
+ORG='pkgstore'
+
 # -------------------------------------------------------------------------------------------------------------------- #
 # -----------------------------------------------------< SCRIPT >----------------------------------------------------- #
 # -------------------------------------------------------------------------------------------------------------------- #
 
 function download() {
-  local refs; [[ "${TAG}" == 'main' ]] && refs='heads' || refs='tags'
-  local url; url="https://github.com/pkgstore/${NAME}/archive/refs/${refs}/${TAG}.tar.gz"
+  local ref; ref='tags'; [[ "${TAG}" == 'main' ]] && ref='heads'
+  local url; url="https://github.com/${ORG}/${NAME}/archive/refs/${ref}/${TAG}.tar.gz"
   curl -fLo "${NAME}-${TAG}.tar.gz" "${url}"
 }
 
