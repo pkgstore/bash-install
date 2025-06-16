@@ -42,7 +42,7 @@ function unpacking() {
 }
 
 function installing() {
-  local f; f=(app.* cron.*); [[ "${ACTION}" == 'update' ]] && f=(*.sh)
+  local f; f=(app.* cron.*)
 
   [[ -d "${DIR}" ]] && mv "${DIR}" "${DIR}.${TS}"
 
