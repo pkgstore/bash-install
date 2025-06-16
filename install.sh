@@ -23,59 +23,37 @@ ACTION="${4:-install}"; readonly ACTION
 
 # Variables.
 ORG='pkgstore'
+TS="$( date '+%s' )"
 
 # -------------------------------------------------------------------------------------------------------------------- #
 # -----------------------------------------------------< SCRIPT >----------------------------------------------------- #
 # -------------------------------------------------------------------------------------------------------------------- #
 
-function download() {
-  local dir; dir="${NAME}.$( date '+%s' ).tmp"
+function downloading() {
+  local dir; dir="${NAME}.${TS}.tmp"
   local ref; ref='tags'; [[ "${TAG}" == 'main' ]] && ref='heads'
   local url; url="https://github.com/${ORG}/${NAME}/archive/refs/${ref}/${TAG}.tar.gz"
 
   mkdir -p "${dir}" && { cd "${dir}" || exit 1; } && curl -fLo "${NAME}-${TAG}.tar.gz" "${url}"
 }
 
-function unpack() {
+function unpacking() {
   tar -xzf "${NAME}-${TAG}.tar.gz" && { cd "${NAME}-${TAG}" || exit 1; }
 }
 
-function app_install() {
-  for i in app_*; do
+function installing() {
+  local f; f=(app.* cron.*); [[ "${ACTION}" == 'update' ]] && f=(*.sh)
+
+  [[ -d "${DIR}" ]] && mv "${DIR}" "${DIR}.${TS}"
+
+  for i in "${f[@]}"; do
+    [[ -f "${i}" ]] || continue
     install -m '0644' -Dt "${DIR}" "${i}"
+    [[ "${i}" == "*.sh" ]] && chmod +x "${DIR}/${i}"
+    [[ "${i}" == "cron.*" ]] && ln -sf "${DIR}/${i}" "/etc/cron.d/${i//./_}"
   done
-}
-
-function app_update() {
-  for i in app_*.sh; do
-    install -m '0644' -Dt "${DIR}" "${i}"
-  done
-}
-
-function cron_install() {
-  local d; d='/etc/cron.d'
-
-  for i in cron_*; do
-    install -m '0644' -Dt "${d}" "${i}"
-  done
-}
-
-function cron_update() {
-  local d; d='/etc/cron.d'
-
-  for i in cron_*; do
-    [[ -f "${d}/${i}" && ! -f "${d}/${i}.orig" ]] && mv "${d}/${i}" "${d}/${i}.orig"
-    install -m '0644' -Dt '/etc/cron.d' "${i}"
-  done
-}
-
-function perms() {
-  chmod +x "${DIR}"/*.sh
 }
 
 function main() {
-  download && unpack \
-    && { [[ "${ACTION}" == 'update' ]] && app_update || app_install; } \
-    && { [[ "${ACTION}" == 'update' ]] && cron_update || cron_install; } \
-    && perms
+  downloading && unpacking && installing
 }; main "$@"
