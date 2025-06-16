@@ -49,7 +49,7 @@ function installing() {
   for i in "${f[@]}"; do
     [[ -f "${i}" ]] || continue
     install -m '0644' -Dt "${DIR}" "${i}"
-    [[ "${i}" == *.sh ]] && chmod +x "${DIR}/${i}"
+    chmod +x "${DIR}/${i}.sh"
     [[ "${i}" == cron.* ]] && ln -sf "${DIR}/${i}" "/etc/cron.d/${i//./_}"
   done
 }
