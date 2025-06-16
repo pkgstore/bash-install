@@ -32,6 +32,7 @@ function download() {
   local dir; dir="${NAME}.$( date '+%s' ).tmp"
   local ref; ref='tags'; [[ "${TAG}" == 'main' ]] && ref='heads'
   local url; url="https://github.com/${ORG}/${NAME}/archive/refs/${ref}/${TAG}.tar.gz"
+
   mkdir -p "${dir}" && { cd "${dir}" || exit 1; } && curl -fLo "${NAME}-${TAG}.tar.gz" "${url}"
 }
 
@@ -39,14 +40,33 @@ function unpack() {
   tar -xzf "${NAME}-${TAG}.tar.gz" && { cd "${NAME}-${TAG}" || exit 1; }
 }
 
-function install_app() {
-  [[ "${ACTION}" == 'update' ]] && { for i in app_*.sh; do install -m '0644' -Dt "${DIR}" "${i}"; done; return 0; }
-  for i in app_*; do install -m '0644' -Dt "${DIR}" "${i}"; done;
+function app_install() {
+  for i in app_*; do
+    install -m '0644' -Dt "${DIR}" "${i}"
+  done
 }
 
-function install_cron() {
-  [[ "${ACTION}" == 'update' ]] && return 0
-  for i in cron_*; do install -m '0644' -Dt '/etc/cron.d' "${i}"; done;
+function app_update() {
+  for i in app_*.sh; do
+    install -m '0644' -Dt "${DIR}" "${i}"
+  done
+}
+
+function cron_install() {
+  local d; d='/etc/cron.d'
+
+  for i in cron_*; do
+    install -m '0644' -Dt "${d}" "${i}"
+  done
+}
+
+function cron_update() {
+  local d; d='/etc/cron.d'
+
+  for i in cron_*; do
+    [[ -f "${d}/${i}" && ! -f "${d}/${i}.orig" ]] && mv "${d}/${i}" "${d}/${i}.orig"
+    install -m '0644' -Dt '/etc/cron.d' "${i}"
+  done
 }
 
 function perms() {
@@ -54,5 +74,8 @@ function perms() {
 }
 
 function main() {
-  download && unpack && install_app && install_cron && perms
+  download && unpack \
+    && { [[ "${ACTION}" == 'update' ]] && app_update || app_install; } \
+    && { [[ "${ACTION}" == 'update' ]] && cron_update || cron_install; } \
+    && perms
 }; main "$@"
