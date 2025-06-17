@@ -41,7 +41,7 @@ function unpacking() {
 }
 
 function installing() {
-  local f; f=(app.* cron.*)
+  local f; f=(app.* job.*)
 
   [[ -d "${DIR}" ]] && tar -cJf "${DIR}.${TS}.tar.xz" -C "${DIR%/*}" "${DIR##*/}"
 
